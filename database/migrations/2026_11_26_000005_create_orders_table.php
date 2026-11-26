@@ -12,15 +12,10 @@ return new class extends Migration
             $table->id();
             $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
             $table->foreignId('product_id')->constrained('products')->onDelete('cascade');
-            $table->foreignId('size_id')->constrained('sizes')->onDelete('cascade');
-            
             $table->dateTime('date');
             $table->integer('quantity');
             $table->decimal('total_price', 12, 2);
-            
-            // Поле для ФИО клиента (по ТЗ)
             $table->string('customer_fullname');
-            
             $table->timestamps();
         });
     }

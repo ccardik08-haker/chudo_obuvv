@@ -11,43 +11,55 @@ class RoleAndUserSeeder extends Seeder
 {
     public function run(): void
     {
-        // 1. Создаем роли
-        $adminRole = Role::create(['name' => 'admin']);
-        $managerRole = Role::create(['name' => 'manager']);
-        $userRole = Role::create(['name' => 'user']);
-
-        // 2. Пользователи из Excel (логины и роли)
-        $users = [
-            ['lastname' => 'Иванов', 'firstname' => 'Иван', 'login' => 'isivanov', 'role' => $adminRole->id],
-            ['lastname' => 'Петров', 'firstname' => 'Пётр', 'login' => 'papetrov', 'role' => $managerRole->id],
-            ['lastname' => 'Сидорова', 'firstname' => 'Анна', 'login' => 'asidorova', 'role' => $userRole->id],
-            ['lastname' => 'Кузнецова', 'firstname' => 'Екатерина', 'login' => 'ekuznetsova', 'role' => $managerRole->id],
-            ['lastname' => 'Смирнов', 'firstname' => 'Дмитрий', 'login' => 'dsmirnov', 'role' => $userRole->id],
-            ['lastname' => 'Попов', 'firstname' => 'Алексей', 'login' => 'apopov', 'role' => $adminRole->id],
-            ['lastname' => 'Васильева', 'firstname' => 'Ольга', 'login' => 'ovasileva', 'role' => $userRole->id],
-            ['lastname' => 'Соколов', 'firstname' => 'Павел', 'login' => 'psokolov', 'role' => $managerRole->id],
-            ['lastname' => 'Михайлова', 'firstname' => 'Татьяна', 'login' => 'tmikhailova', 'role' => $userRole->id],
-            ['lastname' => 'Новикова', 'firstname' => 'Наталья', 'login' => 'nnovikova', 'role' => $managerRole->id],
-            ['lastname' => 'Фёдоров', 'firstname' => 'Андрей', 'login' => 'afedorov', 'role' => $adminRole->id],
-            ['lastname' => 'Морозов', 'firstname' => 'Сергей', 'login' => 'smorozov', 'role' => $userRole->id],
-            ['lastname' => 'Волкова', 'firstname' => 'Юлия', 'login' => 'jvolkova', 'role' => $managerRole->id],
-            ['lastname' => 'Алексеев', 'firstname' => 'Артём', 'login' => 'aalekseev', 'role' => $userRole->id],
-            ['lastname' => 'Лебедева', 'firstname' => 'Ирина', 'login' => 'ilebedeva', 'role' => $userRole->id],
-            ['lastname' => 'Егоров', 'firstname' => 'Никита', 'login' => 'negorov', 'role' => $managerRole->id],
-            ['lastname' => 'Павлова', 'firstname' => 'Елена', 'login' => 'epavlova', 'role' => $userRole->id],
-            ['lastname' => 'Козлов', 'firstname' => 'Роман', 'login' => 'rkozlov', 'role' => $adminRole->id],
-            ['lastname' => 'Степанова', 'firstname' => 'Виктория', 'login' => 'vstepanova', 'role' => $managerRole->id],
-            ['lastname' => 'Николаев', 'firstname' => 'Владимир', 'login' => 'vnikolaev', 'role' => $userRole->id],
+        $roles = [
+            'admin'   => 'Администратор',
+            'manager' => 'Менеджер',
+            'user'    => 'Пользователь',
         ];
 
-        foreach ($users as $u) {
-            User::create([
-                'role_id' => $u['role'],
-                'login' => $u['login'],
-                'phone' => '+7' . rand(900, 999) . rand(1000000, 9999999),
-                'email' => $u['login'] . '@chudo.ru',
-                'password' => Hash::make('password'), // Пароль для всех: password
-            ]);
+        foreach ($roles as $name) {
+            Role::firstOrCreate(['name' => $name]);
+        }
+
+        $roleIds = Role::pluck('id', 'name'); // ['admin' => 1, 'manager' => 2, ...]
+
+        $users = [
+            ['Иванов', 'Иван', 'isivanov', 'admin'],
+            ['Петров', 'Пётр', 'papetrov', 'manager'],
+            ['Сидорова', 'Анна', 'asidorova', 'user'],
+            ['Кузнецова', 'Екатерина', 'ekuznetsova', 'manager'],
+            ['Смирнов', 'Дмитрий', 'dsmirnov', 'user'],
+            ['Попов', 'Алексей', 'apopov', 'admin'],
+            ['Васильева', 'Ольга', 'ovasileva', 'user'],
+            ['Соколов', 'Павел', 'psokolov', 'manager'],
+            ['Михайлова', 'Татьяна', 'tmikhailova', 'user'],
+            ['Новикова', 'Наталья', 'nnovikova', 'manager'],
+            ['Фёдоров', 'Андрей', 'afedorov', 'admin'],
+            ['Морозов', 'Сергей', 'smorozov', 'user'],
+            ['Волкова', 'Юлия', 'jvolkova', 'manager'],
+            ['Алексеев', 'Артём', 'aalekseev', 'user'],
+            ['Лебедева', 'Ирина', 'ilebedeva', 'user'],
+            ['Егоров', 'Никита', 'negorov', 'manager'],
+            ['Павлова', 'Елена', 'epavlova', 'user'],
+            ['Козлов', 'Роман', 'rkozlov', 'admin'],
+            ['Степанова', 'Виктория', 'vstepanova', 'manager'],
+            ['Николаев', 'Владимир', 'vnikolaev', 'user'],
+        ];
+
+        foreach ($users as $i => $u) {
+            [$lastname, $firstname, $login, $roleName] = $u;
+
+            $phone = '+79' . str_pad((string) ($i + 1), 9, '0', STR_PAD_LEFT);
+
+            User::firstOrCreate(
+                ['login' => $login],
+                [
+                    'role_id' => $roleIds[$roleName],
+                    'phone'   => $phone,
+                    'email'   => $login . '@chudo.ru',
+                    'password' => Hash::make('password'),
+                ]
+            );
         }
     }
 }

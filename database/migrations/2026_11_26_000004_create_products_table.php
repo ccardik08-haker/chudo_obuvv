@@ -13,17 +13,17 @@ return new class extends Migration
             $table->foreignId('cat_id')->constrained('categories')->onDelete('cascade');
             $table->foreignId('subcat_id')->constrained('subcategories')->onDelete('cascade');
             $table->foreignId('size_id')->constrained('sizes')->onDelete('cascade');
-            
+
             $table->string('name'); // наименование
             $table->string('manufacture'); // изготовитель
             $table->text('composition')->nullable(); // состав
             $table->text('description')->nullable(); // описание
             $table->decimal('price', 10, 2);
             $table->integer('quantity')->default(0);
-            
+
             // Поле для изображения (по ТЗ у модели должна быть картинка)
-            $table->string('image')->nullable(); 
-            
+            $table->string('image')->nullable();
+
             $table->timestamps();
         });
     }
